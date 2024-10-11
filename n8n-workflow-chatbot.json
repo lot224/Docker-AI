@@ -1,0 +1,269 @@
+{
+  "name": "Chatbot",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "e285b53a-6801-44ec-b66c-e18c5aa4a59d",
+      "name": "Postgres Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        720
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "TVqYPhOBuJt0Kwtv",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama3.1:latest",
+        "options": {}
+      },
+      "id": "43b4f20b-57dc-4e6d-b454-57fa2fd80e2d",
+      "name": "Ollama Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        500,
+        720
+      ],
+      "credentials": {
+        "ollamaApi": {
+          "id": "tYG41ftpDtAevz5U",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama3.1:latest",
+        "options": {}
+      },
+      "id": "1f88c3f2-5e5f-4b42-9a49-9fca19d9c265",
+      "name": "Ollama Model",
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        660
+      ],
+      "credentials": {
+        "ollamaApi": {
+          "id": "tYG41ftpDtAevz5U",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "documents",
+        "topK": 3
+      },
+      "id": "ed19553e-36d9-4089-8b02-74de77156c04",
+      "name": "Vector Store Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "model": "nomic-embed-text:latest"
+      },
+      "id": "9e97c00e-5da8-4826-a473-59ac90557b7a",
+      "name": "Embeddings Ollama",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        760
+      ],
+      "credentials": {
+        "ollamaApi": {
+          "id": "tYG41ftpDtAevz5U",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Local RAG AI Agent with Chat Interface",
+        "height": 527.3027193303974,
+        "width": 670.6821106717343
+      },
+      "id": "223915e6-e4c1-4b0c-bb8c-22fc675f93e1",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        300,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Agent Tools for Local RAG",
+        "height": 528.85546469693,
+        "width": 583.4552380860637,
+        "color": 4
+      },
+      "id": "448c79e3-4d81-4587-9370-e7c43cfa30f7",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        980,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "28a283f7-1bd9-46cc-b478-f30ac69fa095",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        580,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "6dfff3a8-ef32-4a3e-8a6e-c6fcfe197d86",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        360,
+        500
+      ],
+      "webhookId": "4b3b1838-d6b3-447e-9d79-d0931eddb9f8"
+    },
+    {
+      "parameters": {
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "id": "e8bf97ba-1c9c-408f-b46f-090e63667578",
+      "name": "Qdrant Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        640
+      ],
+      "credentials": {
+        "qdrantApi": {
+          "id": "RbRUPjFdfJ93O7be",
+          "name": "QdrantApi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Vector Store Tool",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Tool",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f734371c-ce6c-4c06-b75a-fc2ec4266df1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bd4061e11e824e9fcd039c708c496426ba346e70c5002be2462775947dcfce8f"
+  },
+  "id": "Gk7wsjiQYEp7pPfp",
+  "tags": []
+}

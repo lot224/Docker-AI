@@ -1,0 +1,462 @@
+{
+  "name": "Shared Folder",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerOn": "folder",
+        "path": "/data/shared",
+        "events": [
+          "unlink"
+        ],
+        "options": {}
+      },
+      "id": "9638af8b-8e4f-4bb9-a5cc-b852f031141d",
+      "name": "Shared - Delete",
+      "type": "n8n-nodes-base.localFileTrigger",
+      "typeVersion": 1,
+      "position": [
+        360,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "triggerOn": "folder",
+        "path": "/data/shared",
+        "events": [
+          "change"
+        ],
+        "options": {}
+      },
+      "id": "4629dbe6-0494-4f59-a4de-1486806dc3ae",
+      "name": "Shared - Change",
+      "type": "n8n-nodes-base.localFileTrigger",
+      "typeVersion": 1,
+      "position": [
+        360,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "triggerOn": "folder",
+        "path": "/data/shared",
+        "events": [
+          "add"
+        ],
+        "options": {}
+      },
+      "id": "64321d23-9e92-4943-97f5-e128f56101f2",
+      "name": "Shared - Add",
+      "type": "n8n-nodes-base.localFileTrigger",
+      "typeVersion": 1,
+      "position": [
+        360,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "28a9810c-3d4d-441a-a7df-0a67724282e0",
+              "name": "file_id",
+              "value": "={{ $json.path.split(\"/\").pop() }}",
+              "type": "string"
+            },
+            {
+              "id": "977db1cd-07e1-43bf-b8e5-e57270c8b01a",
+              "name": "folder_id",
+              "value": "={{ $json.path.split(\"/\").slice(0,-1).join(\"/\") }}",
+              "type": "string"
+            },
+            {
+              "id": "7f8cb1ed-308a-4784-a48e-b0aafca9a20b",
+              "name": "event",
+              "value": "={{ $json.event === \"unlink\" ? \"remove\" : \"upsert\" }}",
+              "type": "string"
+            },
+            {
+              "id": "944f9eb1-c727-47e4-8c9b-ab057a86438a",
+              "name": "filename",
+              "value": "={{ $json.path }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "03b08073-6a4c-4348-88a1-3c40dd6518be",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        600,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "fileSelector": "={{ $json.filename }}",
+        "options": {
+          "dataPropertyName": "data"
+        }
+      },
+      "id": "e6488a09-6c4f-428f-87f8-92ef0567d669",
+      "name": "Read/Write Files from Disk",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "chunkSize": 100,
+        "options": {}
+      },
+      "id": "77f0c341-6e9d-4fce-9d2c-0f6db023b247",
+      "name": "Recursive Character Text Splitter1",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        2020,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "id": "68900155-0be0-4e6e-a1f7-3e97c4afb4e6",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1540,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Watch the shared folder for file changes, use markdown files.",
+        "height": 587.6136419717626,
+        "width": 1820.0845550907816
+      },
+      "id": "596e592a-b00b-41e5-b39d-87b393f433ad",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        320,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "model": "nomic-embed-text:latest"
+      },
+      "id": "ec35d204-61b6-41f3-9eca-6db4504e6362",
+      "name": "Embeddings Ollama",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        640
+      ],
+      "credentials": {
+        "ollamaApi": {
+          "id": "tYG41ftpDtAevz5U",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "file_id",
+                "value": "={{ $('Edit Fields').item.json.file_id }}"
+              },
+              {
+                "name": "folder_id",
+                "value": "={{ $('Edit Fields').item.json.folder_id }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "1c4f454e-9aa8-4ea6-bd0b-c877f381bbf6",
+      "name": "Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        1880,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "code": {
+          "execute": {
+            "code": "const { QdrantVectorStore } = require(\"@langchain/qdrant\");\nconst { OllamaEmbeddings } = require(\"@langchain/community/embeddings/ollama\");\n\nconst embeddings = new OllamaEmbeddings({\n  model: \"nomic-embed-text\",\n  baseUrl: \"http://host.docker.internal:11434\"\n});\n\nconst vectorStore = await QdrantVectorStore.fromExistingCollection(\n  embeddings,\n  {\n    url: \"http://host.docker.internal:6333\",\n    collectionName: \"documents\",\n  }\n);\n\nconst file_id = this.getInputData()[0].json.file_id;\nconst folder_id = this.getInputData()[0].json.folder_id;\nconst event = this.getInputData()[0].json.event;\nconst filename = this.getInputData()[0].json.filename;\n\nconst filter = {\n        must: [\n            {\n                key: \"metadata.file_id\",\n                match: {\n                    value: file_id,\n                },\n            },\n            {\n                key: \"metadata.folder_id\",\n                match: {\n                    value: folder_id,\n                },\n            },\n        ],\n    }\n\n// const results = await vectorStore.similaritySearch(\"this\", 10, filter);\n// const idsToDelete = results.map((doc) => doc.id);\n\n// NOT IMPLEMENTED!\n// await vectorStore.delete({ ids: idsToDelete });\n\nvectorStore.client.delete(\"documents\", {\n  filter\n});\n\nreturn [ {json: { event, file_id, folder_id, filename } } ];\n"
+          }
+        },
+        "inputs": {
+          "input": [
+            {
+              "type": "main",
+              "required": true
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "type": "main"
+            }
+          ]
+        }
+      },
+      "id": "cac00d9b-9225-480a-b342-67978e99cbe6",
+      "name": "Clear Vectors",
+      "type": "@n8n/n8n-nodes-langchain.code",
+      "typeVersion": 1,
+      "position": [
+        800,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event }}",
+                    "rightValue": "upsert",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Upsert"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "89e11b7d-5519-4643-8935-131439bbc6c1",
+                    "leftValue": "{{ $json.event }}",
+                    "rightValue": "delete",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Delete"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8fcc2a23-90ce-49ed-a6ef-5ca1d25e1ca7",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1060,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "id": "5bcc7e7c-474b-474f-9cd6-2ab57147e9e8",
+      "name": "Qdrant Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        440
+      ],
+      "credentials": {
+        "qdrantApi": {
+          "id": "RbRUPjFdfJ93O7be",
+          "name": "QdrantApi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Shared - Delete": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shared - Change": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shared - Add": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Clear Vectors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear Vectors": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a906b779-c13b-4084-9399-1f0bc4addd19",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bd4061e11e824e9fcd039c708c496426ba346e70c5002be2462775947dcfce8f"
+  },
+  "id": "hHrYFBATJ2OOe49x",
+  "tags": []
+}
